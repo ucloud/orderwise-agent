@@ -1,0 +1,127 @@
+[
+  {
+    "task_id": "1 App",
+    "category": "waimai_compare",
+    "task": "用美团外卖搜索'双杯冰抹茶拿铁(中杯)'并查看价格",
+    "expected_result": {
+      "type": "price_comparison",
+      "apps": ["美团"],
+      "product": "双杯冰抹茶拿铁(中杯)"
+    },
+    "evaluation": {
+      "success_criteria": [
+        "成功搜索到目标商品",
+        "价格信息正确提取"
+      ],
+      "metrics": ["success_rate", "execution_time", "price_extraction_accuracy"],
+      "timeout": 120
+    }
+  },
+  {
+    "task_id": "2 Apps (no seller)",
+    "category": "waimai_compare",
+    "task": "比较美团外卖和京东外卖上'皇金鸡腿堡单人餐'的价格",
+    "expected_result": {
+      "type": "price_comparison",
+      "apps": ["美团", "京东外卖"],
+      "product": "皇金鸡腿堡单人餐",
+      "parallel": true
+    },
+    "evaluation": {
+      "success_criteria": [
+        "都搜索到目标商品",
+        "价格信息正确提取（price, delivery_fee, pack_fee, total_fee）"
+      ],
+      "metrics": [
+        "success_rate",
+        "execution_time",
+        "parallel_efficiency",
+        "price_extraction_accuracy",
+        "multi_app_coverage"
+      ],
+      "timeout": 180
+    }
+  },
+  {
+    "task_id": "2 Apps (with seller)",
+    "category": "waimai_compare",
+    "task": "比较美团外卖和京东外卖上'茉莉花香拿铁'（商家：瑞幸咖啡）的价格",
+    "expected_result": {
+      "type": "price_comparison",
+      "apps": ["美团", "京东外卖"],
+      "product": "茉莉花香拿铁",
+      "seller": "瑞幸咖啡",
+      "parallel": true
+    },
+    "evaluation": {
+      "success_criteria": [
+        "都搜索到指定商家的商品",
+        "价格信息正确提取",
+        "商家信息匹配"
+      ],
+      "metrics": [
+        "success_rate",
+        "execution_time",
+        "price_extraction_accuracy",
+        "seller_match_accuracy"
+      ],
+      "timeout": 200
+    }
+  },
+  {
+    "task_id": "1 App (minimum order)",
+    "category": "waimai_compare",
+    "task": "在美团外卖中搜索'伯牙绝弦(茉莉雪芽)'，查看是否达到起送价，如果未达到，请说明差多少元起送",
+    "expected_result": {
+      "type": "price_comparison",
+      "apps": ["美团"],
+      "product": "伯牙绝弦(茉莉雪芽)",
+      "scenario": "minimum_order"
+    },
+    "evaluation": {
+      "success_criteria": [
+        "成功搜索到商品",
+        "正确识别起送价场景",
+        "价格信息正确提取（total_fee可能为0）",
+        "正确提取起送价差额（差X元起送）"
+      ],
+      "metrics": [
+        "success_rate",
+        "execution_time",
+        "price_extraction_accuracy",
+        "scenario_detection_accuracy",
+        "minimum_order_amount_accuracy"
+      ],
+      "timeout": 150
+    }
+  },
+  {
+    "task_id": "3 Apps (best price)",
+    "category": "waimai_compare",
+    "task": "在淘宝闪购、京东外卖、美团外卖上比较'沙沙的咸蛋黄鸡腿堡'（商家：肯德基）的价格，找出总价最便宜的",
+    "expected_result": {
+      "type": "price_comparison",
+      "apps": ["淘宝闪购", "京东外卖", "美团"],
+      "product": "沙沙的咸蛋黄鸡腿堡",
+      "seller": "肯德基",
+      "parallel": true,
+      "find_best": true
+    },
+    "evaluation": {
+      "success_criteria": [
+        "都搜索到指定商家的商品",
+        "价格信息正确提取",
+        "成功比较并识别最便宜的平台"
+      ],
+      "metrics": [
+        "success_rate",
+        "execution_time",
+        "parallel_efficiency",
+        "price_extraction_accuracy",
+        "multi_app_coverage",
+        "best_price_accuracy"
+      ],
+      "timeout": 350
+    }
+  }
+]

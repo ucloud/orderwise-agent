@@ -1,0 +1,38 @@
+benchmark:
+  name: "OrderWise vs Original GLM - Waimai Compare Benchmark"
+  version: "1.0"
+  description: "对比原始GLM版本和OrderWise版本在外卖比价任务上的表现"
+
+frameworks:
+  - name: "autoglm"
+    enabled: true
+    adapter: "autoglm_adapter"
+    config_path: "configs/framework_configs/autoglm.yaml"
+    description: "原始AUTOGLM版本 - 顺序执行"
+
+  - name: "orderwise"
+    enabled: true
+    adapter: "orderwise_adapter"
+    config_path: "configs/framework_configs/orderwise.yaml"
+    description: "OrderWise版本 - 并行执行，支持价格提取"
+
+tasks:
+  task_files:
+    - "tasks/waimai_compare_tasks.json"
+  
+  filter:
+    categories: ["waimai_compare"]  
+
+evaluation:
+  metrics:
+    - "success_rate"
+    - "execution_time"
+    - "price_accuracy"
+    - "steps"
+  
+  output_dir: "benchmark/results"
+  
+  report:
+    format: ["json"]
+    include_screenshots: false
+

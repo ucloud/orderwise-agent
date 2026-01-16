@@ -1,0 +1,54 @@
+# MCP Server 配置文件
+# 所有用户可自定义的配置项都在此文件中
+
+# 服务器配置
+server:
+    host: "0.0.0.0"  # 监听地址，0.0.0.0 表示监听所有网络接口
+    port: 8703        # 监听端口
+
+# 文件路径配置（相对于项目根目录）
+paths:
+    app_device_mapping: "mcp_mode/mcp_server/app_device_mapping.json"  # 应用到设备的映射配置文件路径
+    apps_config: "examples/apps_config.json"       # 应用配置文件路径
+    model_config: "mcp_mode/mcp_server/model_config.yaml"   # 模型配置文件路径
+
+# Agent 默认配置
+agent:
+    max_steps: 30                    # 每个平台的最大执行步数
+    verbose: false                   # 是否显示详细日志
+    lang: "zh"                       # 语言设置
+    enable_screenshot_cache: true     # 是否启用截图缓存
+    screenshot_cache_max_age: 300.0  # 截图缓存最大年龄（秒）
+
+# MongoDB 配置（可选，主要用于 takeover 功能）
+# 如果未设置，将从环境变量 MONGODB_CONNECTION_STRING 读取
+mongodb:
+    connection_string: null  # MongoDB 连接字符串，null 表示从环境变量读取
+    # 示例: "mongodb://user:password@host:port/?replicaSet=rs0"
+
+# 默认模型提供商
+model:
+    default_provider: "local"  # 默认模型提供商名称（对应 model_config.yaml 中的配置）
+
+# 商品搜索默认配置
+search:
+    # 默认搜索的平台列表（如果工具调用时未指定 apps 参数）
+    default_apps:
+        - "美团"
+        - "京东外卖"
+        - "淘宝闪购"
+    
+    # 应用名称到配置键的映射（用于从 apps_config.json 中查找配置）
+    app_name_mapping:
+        "美团": "app1"
+        "京东外卖": "app2"
+        "淘宝闪购": "app3"
+    
+    # 默认最大步数（如果工具调用时未指定 max_steps 参数）
+    # 注意：这个值会被 agent.max_steps 覆盖，如果 agent.max_steps 已设置
+    default_max_steps: 30
+
+# Conda 环境配置（用于启动脚本）
+conda:
+    environment: "waimai"  # Conda 环境名称
+

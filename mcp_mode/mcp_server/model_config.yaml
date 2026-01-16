@@ -1,0 +1,31 @@
+# Model configuration for Order Wise MCP Server
+# Supports multiple model providers
+
+# Local vLLM deployment (default)
+# 注意：如果服务器在 Cloudflare 后面，需要设置 Host 头
+local:
+    api_base: "http://localhost:4244/v1"  # 本地部署使用 4244，远程服务器可自定义端口
+    api_key: "EMPTY"
+    model_name: "autoglm-phone-9b"
+    default_headers:
+        Host: "your-domain.com"  # 如果服务器接受任意 Host 头，可以保持此值；否则替换为实际域名
+
+# Remote vLLM deployment (example)
+# remote:
+
+
+#     api_base: "http://your-server-ip:4244/v1"
+#     api_key: "EMPTY"
+#     model_name: "autoglm-phone-9b"
+
+# OpenAI compatible API (example)
+# openai:
+#     api_base: "https://api.openai.com/v1"
+#     api_key: "your-api-key"
+#     model_name: "gpt-4"
+
+#     api_base: "https://api.openai.com/v1"
+#     api_key: "your-api-key"
+#     model_name: "gpt-4"
+
+

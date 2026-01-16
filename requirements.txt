@@ -1,0 +1,28 @@
+# Base libraries
+PyYAML>=6.0
+Pillow==12.0.0
+
+# Data validation
+pydantic==2.12.5
+
+# Network & database
+openai==2.9.0
+pymongo==4.15.5
+
+# Web framework
+starlette==0.50.0
+
+# MCP
+mcp>=1.0.0
+fastmcp>=0.1.0
+
+# Model deployment
+vllm>=0.12.0
+# sglang>=0.5.6.post1
+# transformers>=5.0.0rc0
+
+# Development (optional)
+# pytest>=7.0.0
+# pre-commit>=4.5.0
+# black>=23.0.0
+# mypy>=1.0.0

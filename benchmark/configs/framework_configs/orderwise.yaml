@@ -1,0 +1,17 @@
+# OrderWise版本配置
+
+# 模型配置
+base_url: "http://localhost:4244/v1"  # 本地部署使用 4244，远程服务器可自定义端口
+model: "autoglm-phone-9b"
+api_key: ""  # 如果需要API key，在这里配置
+
+# Agent配置
+max_steps: 100
+device_id: null  # null表示使用默认设备，或指定设备ID如 "your-device-id"
+lang: "zh"  # "zh" 或 "en"
+verbose: false
+
+# OrderWise特有配置
+apps_config_path: "examples/apps_config.json"  # apps配置文件路径
+app_device_mapping_path: "examples/app_device_mapping.json"  # 应用到设备的映射配置文件路径
+
