@@ -45,6 +45,14 @@ AutoGLM is the world's first productized mobile agent (Mobile-Use Agent) launche
 
 ## Real-World Demos
 
+## Usage Tips
+
+**Page Reference**: **Xiaomi** (Search Entry Page) | **Xiaoxuan** (PhoneAgent Execution Page)
+
+1. **Address Configuration**: Please configure the delivery address on each platform on the **Xiaoxuan** page before use, otherwise it may result in no search results.
+
+2. **Seller name is optional**: For products available from multiple sellers (e.g., "Orange Peel Latte"), it's recommended to include the seller name (e.g., "Manner Orange Peel Latte") to ensure accurate price comparison; for unique products ("归云南" - default belongs to "CHAGEE"), it's not required.
+
 ### Demo 1 - Official Experience - Listener Mode
 
 Leverage the parallel execution engine to execute price comparison tasks on three platforms simultaneously, significantly reducing execution time.
@@ -71,13 +79,6 @@ Call the `compare_prices` tool function via MCP protocol to achieve standardized
   </tr>
 </table>
 
-## Usage Tips
-
-**Page Reference**: Xiaomi (Search Entry Page) | Xiaoxuan (PhoneAgent Execution Page)
-
-1. **Address Configuration**: Please configure the delivery address on each platform on the **Xiaoxuan** page before use, otherwise it may result in no search results.
-
-2. **Seller name is optional**: For products available from multiple sellers (e.g., "Orange Peel Latte"), it's recommended to include the seller name (e.g., "Manner Orange Peel Latte") to ensure accurate price comparison; for unique products ("归云南" - default belongs to "CHAGEE"), it's not required.
 
 ## Quick Start
 
