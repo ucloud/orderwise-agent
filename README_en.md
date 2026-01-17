@@ -29,6 +29,7 @@ English | [简体中文](README.md)
 - ✅ **Parallel Execution**: Multiple devices/apps execute simultaneously, execution time is the maximum rather than cumulative
 - ✅ **Device Management**: Cloud phone health monitoring, automatic reconnection
 - ✅ **Price Extraction**: Structured extraction of item price, delivery fee, packaging fee, and total price
+- ✅ **Active Takeover**: Users can interrupt the search at any time. Once the operation is completed, the Agent will automatically resume execution
 - ✅ **MongoDB Integration**: Task queue management, result storage, device mapping, asynchronous writes
 - ✅ **MCP Mode**: Cross-platform tool integration, standardized tool calling interface, synchronous/asynchronous Takeover, session management
 - ✅ **Benchmark Framework**: Performance evaluation and optimization effectiveness verification
@@ -47,7 +48,11 @@ AutoGLM is the world's first productized mobile agent (Mobile-Use Agent) launche
 
 ## Usage Tips
 
-**Page Reference**: **Xiaomi** (Search Entry Page) | **Xiaoxuan** (PhoneAgent Execution Page)
+**Page Reference**: Xiaomi (Search Entry Page) | Xiaoxuan (PhoneAgent Execution Page)
+
+Users can enter any food delivery product they want to compare prices for in the search box. At any time, users can click "我来操作" (I'll handle it) to interrupt the search. Once the operation is completed, the Agent will automatically resume execution.
+
+**Notes**:
 
 1. **Address Configuration**: Please configure the delivery address on each platform on the **Xiaoxuan** page before use, otherwise it may result in no search results.
 
