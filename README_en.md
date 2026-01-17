@@ -50,10 +50,13 @@ AutoGLM is the world's first productized mobile agent (Mobile-Use Agent) launche
 
 **Page Reference**: Xiaomi (Search Entry Page) | Xiaoxuan (PhoneAgent Execution Page)
 
-Users can enter any food delivery product they want to compare prices for in the search box. At any time, users can click "我来操作" (I'll handle it) to interrupt the search. Once the operation is completed, the Agent will automatically resume execution.
+Users can enter any food delivery product they want to compare prices for in the search box. 
+
+At any time, users can click "我来操作" (I'll handle it) to interrupt the search. Once the operation is completed, the Agent will automatically resume execution.
 
 **Notes**:
 
+1. **Account Login**: On the **Xiaoxuan** page, follow the logo hints to sign in to your personal accounts on JD, Taobao, and Meituan.
 1. **Address Configuration**: Please configure the delivery address on each platform on the **Xiaoxuan** page before use, otherwise it may result in no search results.
 
 2. **Seller name is optional**: For products available from multiple sellers (e.g., "Orange Peel Latte"), it's recommended to include the seller name (e.g., "Manner Orange Peel Latte") to ensure accurate price comparison; for unique products ("归云南" - default belongs to "CHAGEE"), it's not required.
