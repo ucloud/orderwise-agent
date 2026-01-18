@@ -42,6 +42,7 @@ from phone_agent.utils.mongodb_writer import MongoDBWriter
 from phone_agent.utils.device_manager import DeviceManager
 from phone_agent.utils.orderwise_logger import debug, info, warning, error, set_verbose, set_quiet
 from bson.regex import Regex
+from pymongo import MongoClient
 
 
 def check_system_requirements(device_ids: Optional[List[str]] = None) -> bool:
@@ -699,6 +700,18 @@ def main():
                     warning(f"[警告] 设备预检失败，但继续执行任务")
             
             debug(f"[调试] 从 MongoDB records 读取到的 device 映射: {app_to_device}")
+            
+            # 检查任务是否已被标记为完成
+            if _mongodb_connection:
+                client = MongoClient(_mongodb_connection, serverSelectionTimeoutMS=1000)
+                doc = client['waimai-server']['tasks'].find_one(
+                    {"taskId": task_id, "userId": user_id},
+                    {"operationType": 1}
+                )
+                client.close()
+                if doc and doc.get("operationType") == "search_completed":
+                    info(f"[跳过] 任务已完成: keyword={keyword}, taskId={task_id}")
+                    return
             
             tasks = _build_tasks_from_configs(
                 _apps_config,
