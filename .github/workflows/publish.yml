@@ -15,15 +15,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Clean previous builds
+        run: |
+          rm -rf dist/ build/ *.egg-info/
+      
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
+      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install build setuptools wheel
+          pip install build setuptools wheel twine
+      
       - name: Build package
         run: python -m build
+      
+      - name: Verify built version
+        run: |
+          ls -l dist/
+          unzip -p dist/*.whl */METADATA | grep Version || echo "Version check skipped for tar.gz"
+      
+      - name: Check distributions
+        run: twine check dist/*
       - name: Upload distributions
         uses: actions/upload-artifact@v4
         with:
@@ -45,44 +60,25 @@ jobs:
           name: release-dists
           path: dist/
       
-      - name: Debug info
-        run: |
-          echo "Repository owner: ${{ github.repository_owner }}"
-          echo "Actor: ${{ github.actor }}"
-          ls -la dist/
-          echo "Contents of dist/:"
-          ls -la dist/*
-      
       - name: Install twine
         run: python -m pip install -U twine
-      
-      - name: Configure Git
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
-      
-      - name: Test credentials
-        run: |
-          # 测试GITHUB_TOKEN是否有权限
-          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/user | grep login || echo "Failed to authenticate"
-      
       - name: Publish to GitHub Packages
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Uploading to GitHub Packages..."
-          echo "Repository: ${{ github.repository }}"
+          echo "Repository owner: ${{ github.repository_owner }}"
           echo "Package files:"
-          find dist/ -type f -name "*.whl" -o -name "*.tar.gz"
+          ls -lh dist/*
           
-          # 正确的上传 URL 格式：upload.pkg.github.com/OWNER/REPO_NAME
-          echo "Attempting upload to https://upload.pkg.github.com/${{ github.repository }}"
+          # GitHub Packages 使用 owner-scoped URL，不是 repo-scoped
+          # 需要在 Settings → Packages → 启用 "Inherit access from source repository" for PyPI registry
+          echo "Attempting upload to https://pypi.pkg.github.com/${{ github.repository_owner }}"
           
           python -m twine upload \
-            --repository-url https://upload.pkg.github.com/${{ github.repository }} \
+            --repository-url https://pypi.pkg.github.com/${{ github.repository_owner }} \
             --username __token__ \
-            --password ${{ secrets.GITHUB_TOKEN }} \
+            --password "${{ secrets.GITHUB_TOKEN }}" \
             --verbose \
             dist/*
