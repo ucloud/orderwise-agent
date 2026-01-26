@@ -53,6 +53,9 @@ jobs:
       contents: read
       packages: write
       id-token: write
+    environment:
+      name: pypi
+      url: https://pypi.org/project/orderwise-agent/
     steps:
       - name: Retrieve release distributions
         uses: actions/download-artifact@v4
@@ -74,10 +77,10 @@ jobs:
           
           # GitHub Packages 使用 owner-scoped URL，不是 repo-scoped
           # 需要在 Settings → Packages → 启用 "Inherit access from source repository" for PyPI registry
-          echo "Attempting upload to https://pypi.pkg.github.com/${{ github.repository_owner }}"
+          echo "Attempting upload to https://upload.pkg.github.com/${{ github.repository_owner }}"
           
           python -m twine upload \
-            --repository-url https://pypi.pkg.github.com/${{ github.repository_owner }} \
+            --repository-url https://upload.pkg.github.com/${{ github.repository_owner }} \
             --username __token__ \
             --password "${{ secrets.GITHUB_TOKEN }}" \
             --verbose \
