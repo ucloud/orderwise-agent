@@ -1,0 +1,21 @@
+[distutils]
+index-servers =
+    pypi
+    testpypi
+
+[pypi]
+username = __token__
+password = pypi-你的2FA应用密码（替换这里）
+
+[testpypi]
+repository = https://test.pypi.org/legacy/
+username = __token__
+password = pypi-你的TestPyPI 2FA应用密码（替换这里）
+
+# 注意：
+# 1. 如果启用了 2FA，需要使用应用密码（App Password），不是 API token
+# 2. 应用密码格式：pypi-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+# 3. 在 PyPI 账户设置中创建应用密码：
+#    - 正式 PyPI: https://pypi.org/manage/account/
+#    - TestPyPI: https://test.pypi.org/manage/account/
+

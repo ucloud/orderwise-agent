@@ -22,6 +22,7 @@ English | [简体中文](README.md)
 
 ## 📰 News
 
+* **[2026-01-23]** 📦 **PyPI Package Released**: OrderWise-Agent is now available on PyPI! Install it quickly with `pip install orderwise-agent`.
 * **[2026-01-15]** 🌐 **Official Website Live**: Our official [website](https://ucloud.github.io/orderwise/index.html) is now live!
 
 ### Core Features
@@ -46,22 +47,21 @@ AutoGLM is the world's first productized mobile agent (Mobile-Use Agent) launche
 
 ## Real-World Demos
 
-## Usage Tips
+### Demo 1 - MCP Mode Invocation
 
-**Page Reference**: Xiaomi (Search Entry Page) | Xiaoxuan (PhoneAgent Execution Page)
+Call the `compare_prices` tool function via MCP protocol to achieve standardized price comparison interface.
 
-Users can enter any food delivery product they want to compare prices for in the search box. 
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="docs/mcp_mode_demo.gif" height="400" alt="MCP Mode Demo"/>
+      <br/>MCP Call: compare_prices(product_name="茉莉花香拿铁", apps=["Meituan", "JD Waimai", "Taobao Instant Buy"])
+      <br/>Start: bash start-mcp-server-tmux.sh (recommended) or bash start-mcp-server.sh
+    </td>
+  </tr>
+</table>
 
-At any time, users can click "我来操作" (I'll handle it) to interrupt the search. Once the operation is completed, the Agent will automatically resume execution.
-
-**Notes**:
-
-1. **Account Login**: On the **Xiaoxuan** page, follow the logo hints to sign in to your personal accounts on JD, Taobao, and Meituan.
-1. **Address Configuration**: Please configure the delivery address on each platform on the **Xiaoxuan** page before use, otherwise it may result in no search results.
-
-2. **Seller name is optional**: For products available from multiple sellers (e.g., "Orange Peel Latte"), it's recommended to include the seller name (e.g., "Manner Orange Peel Latte") to ensure accurate price comparison; for unique products ("归云南" - default belongs to "CHAGEE"), it's not required.
-
-### Demo 1 - Official Experience - Listener Mode
+### Demo 2 - Official Experience - Listener Mode
 
 Leverage the parallel execution engine to execute price comparison tasks on three platforms simultaneously, significantly reducing execution time.
 
@@ -74,23 +74,62 @@ Leverage the parallel execution engine to execute price comparison tasks on thre
   </tr>
 </table>
 
-### Demo 2 - MCP Mode Invocation
-
-Call the `compare_prices` tool function via MCP protocol to achieve standardized price comparison interface.
-
-<table align="center">
-  <tr>
-    <td align="center">
-      <img src="docs/mcp_mode_demo.gif" height="400" alt="MCP Mode Demo"/>
-      <br/>MCP Call: compare_prices(product_name="茉莉花香拿铁", apps=["Meituan", "JD Waimai", "Taobao Instant Buy"])
-    </td>
-  </tr>
-</table>
+**Usage Instructions**:
+- **Page Reference**: <u>**Xiaomi**</u> (Search Entry Page) | <u>**Xiaoxuan**</u> (PhoneAgent Execution Page); Users can enter any food delivery product they want to compare prices for in the search box. At any time, users can click **"我来操作"** (I'll handle it) to interrupt the search. Once the operation is completed, the Agent will automatically resume execution.
+- **Account Login**: On the **Xiaoxuan** page, follow the logo hints to sign in to your personal accounts on JD Waimai, Taobao Instant Buy, and Meituan.
+- **Address Configuration**: Please configure the delivery address on each platform on the **Xiaoxuan** page before use, otherwise it may result in no search results.
+- **Seller name is optional**: For products available from multiple sellers (e.g., "Orange Peel Latte"), it's recommended to include the seller name (e.g., "Manner Orange Peel Latte") to ensure accurate price comparison; for unique products ("归云南" - default belongs to "CHAGEE"), it's not required.
 
 
-## Quick Start
+## Quick Start (MCP Mode - For Personal Usage)
 
-### 1. Environment Setup
+**Step 1: Python Package Installation**
+```bash
+pip install orderwise-agent
+```
+
+> **Note**: Use hyphen `orderwise-agent` for installation, but use underscore `import orderwise_agent` for import. 
+
+**Step 2: Connect Cloud Phones**
+```bash
+# Install ADB (if not already installed)
+brew install android-platform-tools  # macOS
+# Or visit https://developer.android.com/tools/releases/platform-tools
+
+# Connect Android cloud phone
+adb connect your-cloud-phone-ip:port
+adb devices  # Verify connection
+```
+
+**Step 3: Configure Model Service**
+
+**Option 1: Use Zhipu Official API (Recommended)**
+```bash
+export PHONE_AGENT_BASE_URL="https://open.bigmodel.cn/api/paas/v4"
+export PHONE_AGENT_MODEL="autoglm-phone"
+export PHONE_AGENT_API_KEY="your-api-key"  # Apply at [Zhipu Platform](https://docs.bigmodel.cn/cn/api/introduction)
+```
+
+**Option 2: Use Self-Deployed Model Service**
+```bash
+export ORDERWISE_MODEL_URL="http://your-model-server:port/v1"  # Model service address
+export ORDERWISE_MODEL_NAME="autoglm-phone-9b"                 # Model name
+```
+
+**Step 4: Run**
+```bash
+orderwise-agent mcp "茉莉花香拿铁" --seller "瑞幸" --apps 美团=云手机1-ip 京东外卖=云手机2-ip 淘宝闪购=云手机3-ip
+```
+
+---
+
+## Listener Mode - For Production Environment
+
+> **Note**: If you have already completed steps 2-3 of [Quick Start (MCP Mode)](#quick-start-mcp-mode---for-personal-usage) (connecting cloud phones and configuring model service), you can continue configuring Listener mode based on that. Mainly need to configure MongoDB and device mapping additionally.
+
+### 1. Installation
+
+**Install from Source**
 
 ```bash
 git clone https://github.com/ucloud/orderwise-agent.git
@@ -101,40 +140,7 @@ pip install -e .  # Or use uv: uv pip install -e . (uv needs to be installed fir
 
 ### 2. Configure Devices
 
-#### 2.1 Connect Android Devices
-
-**Install ADB tools**:
-```bash
-# macOS
-brew install android-platform-tools
-
-# Linux / Windows
-# Manual download: https://developer.android.com/tools/releases/platform-tools
-```
-
-**Connect devices** (choose based on your device type):
-
-- **Android Cloud Phone** (Recommended):
-```bash
-adb connect your-cloud-phone-ip:port
-```
-
-- **Physical Android Device**:
-```bash
-# 1. Connect phone via USB cable
-# 2. Tap "Allow USB debugging" on phone
-```
-
-**Verify connection** (for all device types):
-```bash
-adb devices
-```
-
-#### 2.2 Mode-Specific Configuration
-
-Configure device mapping based on the mode you use:
-
-**Listener Mode (Production)**
+> **Note**: If you have already completed step 2 of [Quick Start (MCP Mode)](#quick-start-mcp-mode---for-personal-usage) (connecting cloud phones), you can skip the device connection step and directly configure device mapping. If devices are not connected yet, please refer to step 2 of Quick Start.
 
 Device mapping is primarily read from MongoDB's `device_mapping` collection.
 
@@ -150,42 +156,13 @@ LISTENER_DEVICES = [
 ]
 ```
 
-**MCP Mode / Benchmark Mode**
-
-Edit `examples/app_device_mapping.json`:
-
-```json
-{
-  "app1": "your-cloud-phone-ip:port",  # Android cloud phone for Meituan
-  "app2": "your-cloud-phone-ip:port",  # Android cloud phone for JD Waimai
-  "app3": "your-cloud-phone-ip:port"    # Android cloud phone for Taobao Instant Buy
-}
-```
 
 ### 3. Model Configuration
 
-#### 3.1 Listener Mode Configuration
+> **Note**: If you have already completed step 3 of [Quick Start (MCP Mode)](#quick-start-mcp-mode---for-personal-usage) (configuring model service), you can skip the model service configuration and only need to configure MongoDB additionally.
 
-**Listener Mode** uses the `env.sh` file to configure the model service (run `source env.sh` to take effect):
+**Local vLLM Deployment** (If choosing self-deployed model service, refer to [Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM)):
 
-**MongoDB Configuration** (Required):
-```bash
-export MONGODB_CONNECTION_STRING="mongodb://user:password@host:port/?replicaSet=rs0"
-```
-
-**Model Service Configuration**:
-
-**Option 1: Zhipu Official API**
-```bash
-export PHONE_AGENT_BASE_URL="https://open.bigmodel.cn/api/paas/v4"
-export PHONE_AGENT_MODEL="autoglm-phone"
-export PHONE_AGENT_API_KEY="your-api-key"  # Apply at [Zhipu Platform](https://docs.bigmodel.cn/cn/api/introduction)
-export PHONE_AGENT_MAX_STEPS="100"
-```
-
-**Option 2: Local vLLM Deployment** (Refer to [Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM))
-
-1. **Start vLLM Service** (configure port):
 ```bash
 python3 -m vllm.entrypoints.openai.api_server \
   --served-model-name autoglm-phone-9b \
@@ -200,31 +177,11 @@ python3 -m vllm.entrypoints.openai.api_server \
   --port 4244  # ← Configure service port (use 4244 for local, customize for remote server)
 ```
 
-2. **Configure Agent Connection** (edit `env.sh`):
+
+**MongoDB Configuration** (Required):
 ```bash
-# Local deployment: use localhost
-export PHONE_AGENT_BASE_URL="http://localhost:4244/v1"
-
-# Remote server: use server IP
-# export PHONE_AGENT_BASE_URL="http://your-server-ip:4244/v1"
-
-export PHONE_AGENT_MODEL="autoglm-phone-9b"
-export PHONE_AGENT_MAX_STEPS="100"
+export MONGODB_CONNECTION_STRING="mongodb://user:password@host:port/?replicaSet=rs0"
 ```
-
-#### 3.2 MCP Mode Configuration
-
-**MCP Mode** uses the `env.sh` file to configure the model service (unified with Listener Mode, run `source env.sh` to take effect):
-
-```bash
-export PHONE_AGENT_BASE_URL="https://open.bigmodel.cn/api/paas/v4"
-export PHONE_AGENT_MODEL="autoglm-phone"
-export PHONE_AGENT_API_KEY="your-api-key"
-export PHONE_AGENT_MAX_STEPS="100"
-```
-
-**Note**:
-- MCP Mode and Listener Mode use the same `env.sh` configuration for unified management
 
 ### 4. Run Agent
 
@@ -236,27 +193,14 @@ bash start-listener.sh
 
 **Features**: Continuous running, high concurrency, task queue persistence (MongoDB), asynchronous Takeover
 
-#### MCP Mode (Personal Experience)
+---
 
-**Local Deployment**:
-
-**Standard Start**:
-```bash
-bash start-mcp-server.sh
-```
-
-**tmux Split Start (Recommended)**:
-```bash
-bash start-mcp-server-tmux.sh
-```
-Start in tmux, display logs in 3 columns by Meituan/JD Waimai/Taobao Instant Buy for easy debugging.
-
-**Sandbox Deployment** (Cloud Environment):
+## Sandbox Deployment (MCP Mode - Cloud Environment)
 
 Deploy MCP server on UCloud Sandbox, no local environment required:
 
 ```bash
-# Install Sandbox SDK (if using Sandbox deployment)
+# Install Sandbox SDK
 pip install ucloud_sandbox
 
 cd sandbox
@@ -269,37 +213,11 @@ python compare_prices.py      # Use price comparison tool
 
 Detailed documentation: See [sandbox/README.md](sandbox/README.md)
 
-**Features**: Lightweight, no MongoDB required, synchronous calls, instant response
-
-**Tool Function**: MCP mode provides the `compare_prices` tool function, supporting multi-platform price comparison via MCP protocol.
-
-**Using MCP Client**:
-
-```bash
-python mcp_mode/mcp_client/mcp_client_example.py
-```
-
-#### Benchmark Evaluation
-
-```bash
-cd benchmark
-python runner.py          # Interactive mode
-python runner.py --batch  # Batch execution
-```
+---
 
 ## Two Mode Call Flows
 
-### Listener Mode (Production)
-
-```
-Business System → MongoDB(tasks) → MongoDBListener → on_new_task → ParallelExecutor
-  ↓                                                              ↓
-MongoDB(results) ← Async Write ← Meituan/JD/Taobao Agent (Parallel Execution)
-```
-
-**Takeover**: Agent → MongoDB(takeover) → Polling Wait → User Reply → Continue Execution
-
-### MCP Mode (Personal Experience)
+### MCP Mode (Personal Usage)
 
 <table align="center">
   <tr>
@@ -310,14 +228,19 @@ MongoDB(results) ← Async Write ← Meituan/JD/Taobao Agent (Parallel Execution
   </tr>
 </table>
 
-**Tool Function**: `compare_prices` - Multi-platform price comparison tool, supports parameters:
-- `product_name` (required): Product name
-- `seller_name` (optional): Seller name
-- `apps` (optional): Platform list, defaults to all
-- `max_steps` (optional): Maximum execution steps
-- `session_id` / `reply_from_client` (optional): For continuing interrupted tasks
+**Tool Function**: `compare_prices` - Multi-platform price comparison tool (see [Demo 1](#demo-1---mcp-mode-invocation))
 
 **Takeover**: Agent → Throw Exception → Return session_id → User Reply → Resume Execution
+
+### Listener Mode (Production)
+
+```
+Business System → MongoDB(tasks) → MongoDBListener → on_new_task → ParallelExecutor
+  ↓                                                              ↓
+MongoDB(results) ← Async Write ← Meituan/JD/Taobao Agent (Parallel Execution)
+```
+
+**Takeover**: Agent → MongoDB(takeover) → Polling Wait → User Reply → Continue Execution
 
 ## Directory Structure
 
@@ -349,13 +272,23 @@ orderwise-agent/
 
 ### Benchmark Configuration
 
+> **Note**: If you have already completed steps 1-3 of [Quick Start (MCP Mode)](#quick-start-mcp-mode---for-personal-usage) (installation, connecting cloud phones, configuring model service), the `base_url` and `model` in the yaml configuration will be automatically read from environment variables, no modification needed.
+
 Edit `benchmark/configs/framework_configs/orderwise.yaml`:
 
 ```yaml
-base_url: "http://localhost:4244/v1"  # Use 4244 for local deployment, customize port for remote server
-model: "autoglm-phone-9b"
+base_url: "http://localhost:4244/v1"  # Use 4244 for local deployment, customize port for remote server (if environment variables are not set)
+model: "autoglm-phone-9b"  # If environment variables are not set
 apps_config_path: "examples/apps_config.json"
 app_device_mapping_path: "examples/app_device_mapping.json"
+```
+
+**Run Benchmark Evaluation**:
+
+```bash
+cd benchmark
+python runner.py          # Interactive mode
+python runner.py --batch  # Batch execution
 ```
 
 ### Supported Applications

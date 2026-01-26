@@ -20,6 +20,7 @@
 
 ## 📰 News
 
+* **[2026-01-23]** 📦 **PyPI 包发布**：OrderWise-Agent 已发布到 PyPI，可以通过 `pip install orderwise-agent` 快速安装使用。
 * **[2026-01-15]** 🌐 **官方网站上线**：我们的官方网站现已上线，访问 [网站](https://ucloud.github.io/orderwise/index.html) 了解更多信息。
 
 ### 核心功能
@@ -44,22 +45,21 @@ AutoGLM 是智谱AI推出的全球首个产品化手机智能体（Mobile-Use Ag
 
 ## 真实世界演示
 
-### 使用指南
+### Demo 1 - MCP 模式调用
 
-**页面说明**：<u>**小觅**</u>（搜索入口页面）| <u>**小选**</u>（PhoneAgent执行页面）
+通过 MCP 协议调用 `compare_prices` 工具函数，实现标准化的比价接口。
 
-用户可以在搜索框输入任意想要比价的外卖商品。
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="docs/mcp_mode_demo.gif" height="400" alt="MCP 模式演示"/>
+      <br/>MCP 调用: compare_prices(product_name="茉莉花香拿铁", apps=["美团", "京东外卖", "淘宝闪购"])
+      <br/>启动: bash start-mcp-server-tmux.sh (推荐) 或 bash start-mcp-server.sh
+    </td>
+  </tr>
+</table>
 
-用户可以在任意时间点击**我来操作**中断搜索，待操作完成后，Agent 会自动恢复执行。
-
-**注意**：
-1. **账号登录**: 在**小选**页面根据Logo的提示登录京东外卖、淘宝闪购和美团的个人账号
-
-2. **地址配置**：使用前请先在**小选**页面配置各外卖平台的配送地址，否则可能导致搜索无结果。
-
-3. **商家名称可选**：多个商家都有的商品（如"橘皮拿铁"）建议包含商家名称（如"Manner橘皮拿铁"）以确保比价准确；独有商品（"归云南"默认属于"霸王茶姬"）无需提供。
-
-### Demo 1 - 官方体验版 - Listener 模式
+### Demo 2 - 官方体验版 - Listener 模式
 
 利用并行执行引擎，同时在三个平台执行比价任务，大幅缩短执行时间。
 
@@ -72,23 +72,62 @@ AutoGLM 是智谱AI推出的全球首个产品化手机智能体（Mobile-Use Ag
   </tr>
 </table>
 
-### Demo 2 - MCP 模式调用
-
-通过 MCP 协议调用 `compare_prices` 工具函数，实现标准化的比价接口。
-
-<table align="center">
-  <tr>
-    <td align="center">
-      <img src="docs/mcp_mode_demo.gif" height="400" alt="MCP 模式演示"/>
-      <br/>MCP 调用: compare_prices(product_name="茉莉花香拿铁", apps=["美团", "京东外卖", "淘宝闪购"])
-    </td>
-  </tr>
-</table>
+**使用说明**：
+- **页面说明**：<u>**小觅**</u>（搜索入口页面）| <u>**小选**</u>（PhoneAgent执行页面）; 用户可以在搜索框输入任意想要比价的外卖商品。用户可以在任意时间点击**我来操作**中断搜索，待操作完成后，Agent 会自动恢复执行。
+- **账号登录**：在**小选**页面根据Logo的提示登录京东外卖、淘宝闪购和美团的个人账号
+- **地址配置**：使用前请先在**小选**页面配置各外卖平台的配送地址，否则可能导致搜索无结果
+- **商家名称可选**：多个商家都有的商品（如"橘皮拿铁"）建议包含商家名称（如"Manner橘皮拿铁"）以确保比价准确；独有商品（"归云南"默认属于"霸王茶姬"）无需提供
 
 
-## 快速开始
+## 快速开始（MCP 模式 - 用于个人体验）
 
-### 1. 运行环境搭建
+**步骤 1：python包安装**
+```bash
+pip install orderwise-agent
+```
+
+> **注意**：安装时使用连字符 `orderwise-agent`，但导入时使用下划线 `import orderwise_agent`。
+
+**步骤 2：连接云手机**
+```bash
+# 安装 ADB（如果还没有）
+brew install android-platform-tools  # macOS
+# 或访问 https://developer.android.com/tools/releases/platform-tools
+
+# 连接 Android 云手机
+adb connect your-cloud-phone-ip:port
+adb devices  # 验证连接
+```
+
+**步骤 3：配置模型服务**
+
+**方式一：使用智谱官方 API（推荐）**
+```bash
+export PHONE_AGENT_BASE_URL="https://open.bigmodel.cn/api/paas/v4"
+export PHONE_AGENT_MODEL="autoglm-phone"
+export PHONE_AGENT_API_KEY="your-api-key"  # 在 [智谱平台](https://docs.bigmodel.cn/cn/api/introduction) 申请
+```
+
+**方式二：使用自部署模型服务**
+```bash
+export ORDERWISE_MODEL_URL="http://your-model-server:port/v1"  # 模型服务地址
+export ORDERWISE_MODEL_NAME="autoglm-phone-9b"                 # 模型名称
+```
+
+**步骤 4：运行**
+```bash
+orderwise-agent mcp "茉莉花香拿铁" --seller "瑞幸" --apps 美团=云手机1-ip 京东外卖=云手机2-ip 淘宝闪购=云手机3-ip
+```
+
+---
+
+## Listener 模式 - 用于生产环境
+
+> **提示**：如果你已经完成了[快速开始（MCP 模式）](#快速开始mcp-模式)的步骤 2-3（连接云手机和配置模型服务），可以在此基础上继续配置 Listener 模式。主要需要额外配置 MongoDB 和设备映射。
+
+### 1. 安装
+
+**从源码安装**
 
 ```bash
 git clone https://github.com/ucloud/orderwise-agent.git
@@ -99,40 +138,7 @@ pip install -e .  # 或使用 uv: uv pip install -e . (需先安装uv)
 
 ### 2. 配置设备
 
-#### 2.1 连接 Android 设备
-
-**安装 ADB 工具**：
-```bash
-# macOS
-brew install android-platform-tools
-
-# Linux / Windows
-# 手动下载：https://developer.android.com/tools/releases/platform-tools
-```
-
-**连接设备**（根据你的设备类型选择）：
-
-- **Android 云手机**（推荐）：
-```bash
-adb connect your-cloud-phone-ip:port
-```
-
-- **物理 Android 设备**：
-```bash
-# 1. 用数据线连接手机
-# 2. 手机上点击「允许 USB 调试」
-```
-
-**验证连接**（所有设备类型）：
-```bash
-adb devices
-```
-
-#### 2.2 模式特定配置
-
-根据你使用的模式，配置对应的设备映射：
-
-**Listener 模式（生产环境）**
+> **提示**：如果已经完成了[快速开始（MCP 模式）](#快速开始mcp-模式)的步骤 2（连接云手机），可以跳过设备连接步骤，直接配置设备映射。如果还未连接设备，请参考快速开始的步骤 2。
 
 设备映射主要从 MongoDB 的 `device_mapping` collection 读取。
 
@@ -148,42 +154,13 @@ LISTENER_DEVICES = [
 ]
 ```
 
-**MCP 模式 / Benchmark 模式**
-
-编辑 `examples/app_device_mapping.json`：
-
-```json
-{
-  "app1": "your-cloud-phone-ip:port",  # 用于美团的 Android 云手机
-  "app2": "your-cloud-phone-ip:port",  # 用于京东外卖的 Android 云手机
-  "app3": "your-cloud-phone-ip:port"    # 用于淘宝闪购的 Android 云手机
-}
-```
 
 ### 3. 模型配置
 
-#### 3.1 Listener 模式配置
+> **提示**：如果已经完成了[快速开始（MCP 模式）](#快速开始mcp-模式)的步骤 3（配置模型服务），可以跳过模型服务配置，只需要额外配置 MongoDB。
 
-**Listener 模式**使用 `env.sh` 文件配置模型服务（需 `source env.sh` 使其生效）：
+**本地部署 vLLM 服务**（如果选择自部署模型服务，参考 [Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM)）：
 
-**MongoDB 配置**（必需）：
-```bash
-export MONGODB_CONNECTION_STRING="mongodb://user:password@host:port/?replicaSet=rs0"
-```
-
-**模型服务配置**：
-
-**方式一：智谱官方 API**
-```bash
-export PHONE_AGENT_BASE_URL="https://open.bigmodel.cn/api/paas/v4"
-export PHONE_AGENT_MODEL="autoglm-phone"
-export PHONE_AGENT_API_KEY="your-api-key"  # 在 [智谱平台](https://docs.bigmodel.cn/cn/api/introduction) 申请
-export PHONE_AGENT_MAX_STEPS="100"
-```
-
-**方式二：本地部署 vLLM**（参考 [Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM)）
-
-1. **启动 vLLM 服务**（配置端口）：
 ```bash
 python3 -m vllm.entrypoints.openai.api_server \
   --served-model-name autoglm-phone-9b \
@@ -198,35 +175,13 @@ python3 -m vllm.entrypoints.openai.api_server \
   --port 4244  # ← 配置服务端口（本地用 4244，远程服务器可自定义）
 ```
 
-2. **配置 Agent 连接**（编辑 `env.sh`）：
+
+**MongoDB 配置**（必需）：
 ```bash
-# 本地部署：使用 localhost
-export PHONE_AGENT_BASE_URL="http://localhost:4244/v1"
-
-# 远程服务器：使用服务器 IP
-# export PHONE_AGENT_BASE_URL="http://your-server-ip:4244/v1"
-
-export PHONE_AGENT_MODEL="autoglm-phone-9b"
-export PHONE_AGENT_MAX_STEPS="100"
+export MONGODB_CONNECTION_STRING="mongodb://user:password@host:port/?replicaSet=rs0"
 ```
 
-#### 3.2 MCP 模式配置
-
-**MCP 模式**使用 `env.sh` 文件配置模型服务（与 Listener 模式统一，需 `source env.sh` 使其生效）：
-
-```bash
-export PHONE_AGENT_BASE_URL="https://open.bigmodel.cn/api/paas/v4"
-export PHONE_AGENT_MODEL="autoglm-phone"
-export PHONE_AGENT_API_KEY="your-api-key"
-export PHONE_AGENT_MAX_STEPS="100"
-```
-
-**注意**：
-- MCP 模式和 Listener 模式使用相同的 `env.sh` 配置，统一管理
-
-### 4. 运行Agent
-
-#### Listener 模式（生产环境）
+### 4. 运行 Agent
 
 ```bash
 bash start-listener.sh
@@ -234,27 +189,14 @@ bash start-listener.sh
 
 **特点**：持续运行、高并发、任务队列持久化（MongoDB）、异步接管(Takeover)
 
-#### MCP 模式（个人体验）
+---
 
-**本地部署**：
-
-**标准启动**：
-```bash
-bash start-mcp-server.sh
-```
-
-**tmux 分列启动 (推荐)**：
-```bash
-bash start-mcp-server-tmux.sh
-```
-在 tmux 中启动，按美团/京东外卖/淘宝闪购分3列显示日志，方便调试。
-
-**Sandbox 部署**（云端环境）：
+## Sandbox 部署（MCP 模式 - 云端环境）
 
 在 UCloud Sandbox 上部署 MCP 服务器，无需本地环境：
 
 ```bash
-# 安装 Sandbox SDK（如果使用 Sandbox 部署）
+# 安装 Sandbox SDK
 pip install ucloud_sandbox
 
 cd sandbox
@@ -267,35 +209,9 @@ python compare_prices.py      # 使用比价工具
 
 详细文档：参见 [sandbox/README.md](sandbox/README.md)
 
-**特点**：轻量级、无需 MongoDB、同步调用、即时响应
-
-**工具函数**：MCP 模式提供 `compare_prices` 工具函数，支持通过 MCP 协议调用进行多平台比价。
-
-**使用 MCP Client**：
-
-```bash
-python mcp_mode/mcp_client/mcp_client_example.py
-```
-
-#### Benchmark 评估
-
-```bash
-cd benchmark
-python runner.py          # 交互模式
-python runner.py --batch  # 批量执行
-```
+---
 
 ## 两种模式调用流程
-
-### Listener 模式（生产环境）
-
-```
-业务系统 → MongoDB(tasks) → MongoDBListener → on_new_task → ParallelExecutor
-  ↓                                                              ↓
-MongoDB(results) ← 异步写入 ← 美团/京东/淘宝 Agent (并行执行)
-```
-
-**接管(Takeover)**：Agent → MongoDB(takeover) → 轮询等待 → 用户回复 → 继续执行
 
 ### MCP 模式（个人体验）
 
@@ -308,14 +224,19 @@ MongoDB(results) ← 异步写入 ← 美团/京东/淘宝 Agent (并行执行)
   </tr>
 </table>
 
-**工具函数**：`compare_prices` - 多平台比价工具，支持参数：
-- `product_name`（必需）：商品名称
-- `seller_name`（可选）：商家名称
-- `apps`（可选）：平台列表，默认全部
-- `max_steps`（可选）：最大执行步数
-- `session_id` / `reply_from_client`（可选）：用于继续被中断的任务
+**工具函数**：`compare_prices` - 多平台比价工具（详见 [Demo 1](#demo-1---mcp-模式调用)）
 
 **接管(Takeover)**：Agent → 抛出异常 → 返回 session_id → 用户回复 → 恢复执行
+
+### Listener 模式（生产环境）
+
+```
+业务系统 → MongoDB(tasks) → MongoDBListener → on_new_task → ParallelExecutor
+  ↓                                                              ↓
+MongoDB(results) ← 异步写入 ← 美团/京东/淘宝 Agent (并行执行)
+```
+
+**接管(Takeover)**：Agent → MongoDB(takeover) → 轮询等待 → 用户回复 → 继续执行
 
 ## 目录结构
 
@@ -347,13 +268,23 @@ orderwise-agent/
 
 ### Benchmark 配置
 
+> **提示**：如果已经完成了[快速开始（MCP 模式）](#快速开始mcp-模式)的步骤 1-3（安装、连接云手机、配置模型服务），yaml 配置中的 `base_url` 和 `model` 会自动从环境变量读取，无需修改。
+
 编辑 `benchmark/configs/framework_configs/orderwise.yaml`：
 
 ```yaml
-base_url: "http://localhost:4244/v1"  # 本地部署使用 4244，远程服务器可自定义端口
-model: "autoglm-phone-9b"
+base_url: "http://localhost:4244/v1"  # 本地部署使用 4244，远程服务器可自定义端口（如果未设置环境变量）
+model: "autoglm-phone-9b"  # 如果未设置环境变量
 apps_config_path: "examples/apps_config.json"
 app_device_mapping_path: "examples/app_device_mapping.json"
+```
+
+**运行 Benchmark 评估**：
+
+```bash
+cd benchmark
+python runner.py          # 交互模式
+python runner.py --batch  # 批量执行
 ```
 
 ### 支持的应用

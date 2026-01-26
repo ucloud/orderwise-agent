@@ -1,0 +1,23 @@
+include README.md
+include README_en.md
+include README_PYPI.md
+include LICENSE
+include NOTICE
+include requirements.txt
+include pyproject.toml
+include setup.py
+
+# 包含示例配置文件
+recursive-include examples *.json *.py
+
+# 包含文档
+recursive-include docs *.md *.png *.gif *.jpg *.png
+
+# 排除不需要的文件
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude __pycache__
+global-exclude *.egg-info
+global-exclude .git*
+global-exclude *.log
+
