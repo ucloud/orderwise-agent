@@ -77,6 +77,13 @@ jobs:
       - name: Build distribution artifacts
         run: python -m build
 
+      - name: Remove tar.gz to avoid size limit (wheel only)
+        run: |
+          # PyPI has 100MB limit, wheel is much smaller
+          rm -f dist/*.tar.gz
+          echo "Remaining files to upload:"
+          ls -lh dist/
+
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         # Trusted Publishing: No user/password needed

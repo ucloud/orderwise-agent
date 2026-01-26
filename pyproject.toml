@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "orderwise-agent"
-version = "1.0.0"
+version = "1.0.2"
 description = "基于 AutoGLM 的智能外卖比价 Agent"
 readme = "README_PYPI.md"
 requires-python = ">=3.10"

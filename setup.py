@@ -8,7 +8,7 @@ with open("README_PYPI.md", "r", encoding="utf-8") as f:
 
 setup(
     name="orderwise-agent",
-    version="1.0.0",
+    version="1.0.2",
     author="UCloud",
     author_email="orderwise.agent@gmail.com",
     description="基于 AutoGLM 的智能外卖比价 Agent",

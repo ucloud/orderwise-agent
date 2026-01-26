@@ -10,8 +10,9 @@ include setup.py
 # 包含示例配置文件
 recursive-include examples *.json *.py
 
-# 包含文档
-recursive-include docs *.md *.png *.gif *.jpg *.png
+# 排除 docs 目录（包含大文件，不适合包含在 PyPI 包中）
+# 文档可以通过 GitHub 仓库访问
+# recursive-include docs *.md *.png *.gif *.jpg *.png
 
 # 排除不需要的文件
 global-exclude *.pyc
