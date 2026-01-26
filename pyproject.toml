@@ -61,8 +61,9 @@ include = ["orderwise_agent*", "phone_agent*", "mcp_mode*"]
 
 [tool.setuptools]
 include-package-data = true
+license-files = []
 
 [tool.setuptools.data-files]
-"" = ["README.md", "LICENSE", "NOTICE", "requirements.txt"]
+"" = ["README.md", "NOTICE", "requirements.txt"]
 "examples" = ["examples/*.json", "examples/*.py"]
 

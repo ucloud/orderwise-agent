@@ -1,15 +1,14 @@
-# This workflow will upload a Python Package to GitHub Packages when a release is created
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#publishing-to-package-registries
-
 name: Upload Python Package to GitHub Packages
 
 on:
   release:
-    types: [published]
+    types: [published, edited]
+  workflow_dispatch:
 
 permissions:
   contents: read
   packages: write
+  id-token: write
 
 jobs:
   release-build:
@@ -19,10 +18,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      - name: Build release distributions
+      - name: Install dependencies
         run: |
-          python -m pip install build
-          python -m build
+          python -m pip install --upgrade pip
+          pip install build setuptools wheel
+      - name: Build package
+        run: python -m build
       - name: Upload distributions
         uses: actions/upload-artifact@v4
         with:
@@ -36,20 +37,52 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
     steps:
       - name: Retrieve release distributions
         uses: actions/download-artifact@v4
         with:
           name: release-dists
           path: dist/
+      
+      - name: Debug info
+        run: |
+          echo "Repository owner: ${{ github.repository_owner }}"
+          echo "Actor: ${{ github.actor }}"
+          ls -la dist/
+          echo "Contents of dist/:"
+          ls -la dist/*
+      
+      - name: Install twine
+        run: python -m pip install -U twine
+      
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+      
+      - name: Test credentials
+        run: |
+          # 测试GITHUB_TOKEN是否有权限
+          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/user | grep login || echo "Failed to authenticate"
+      
       - name: Publish to GitHub Packages
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python -m pip install twine
+          echo "Uploading to GitHub Packages..."
+          echo "Repository: ${{ github.repository }}"
+          echo "Package files:"
+          find dist/ -type f -name "*.whl" -o -name "*.tar.gz"
+          
+          # 正确的上传 URL 格式：upload.pkg.github.com/OWNER/REPO_NAME
+          echo "Attempting upload to https://upload.pkg.github.com/${{ github.repository }}"
+          
           python -m twine upload \
-            --repository-url https://upload.pkg.github.com/${{ github.repository_owner }}/orderwise-agent \
+            --repository-url https://upload.pkg.github.com/${{ github.repository }} \
             --username __token__ \
             --password ${{ secrets.GITHUB_TOKEN }} \
+            --verbose \
             dist/*
