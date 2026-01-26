@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orderwise-agent"
+version = "1.0.0"
+description = "基于 AutoGLM 的智能外卖比价 Agent"
+readme = "README_PYPI.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [{name = "UCloud", email = "orderwise.agent@gmail.com"}]
+keywords = ["ai", "agent", "mobile", "automation", "price-comparison"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "PyYAML>=6.0",
+    "Pillow>=12.0.0",
+    "pydantic>=2.12.5",
+    "openai>=2.9.0",
+    "pymongo>=4.15.5",
+    "starlette>=0.50.0",
+    "mcp>=1.0.0",
+    "fastmcp>=0.1.0",
+    "uvicorn>=0.20.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/ucloud/orderwise-agent"
+Repository = "https://github.com/ucloud/orderwise-agent"
+
+[project.scripts]
+orderwise-agent = "orderwise_agent.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["orderwise_agent*", "phone_agent*", "mcp_mode*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.yaml", "*.yml", "*.md"]
+"mcp_mode.mcp_server" = ["*.yaml", "*.json"]
+"orderwise_agent" = ["*.json"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.data-files]
+"" = ["README.md", "LICENSE", "NOTICE", "requirements.txt"]
+"examples" = ["examples/*.json", "examples/*.py"]
+

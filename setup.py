@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
-"""Setup script for Phone Agent."""
+"""Setup script for OrderWise-Agent."""
 
 from setuptools import find_packages, setup
 
-with open("README.md", "r", encoding="utf-8") as f:
+with open("README_PYPI.md", "r", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="phone-agent",
-    version="0.1.0",
-    author="Zhipu AI",
-    author_email="",
-    description="AI-powered phone automation framework",
+    name="orderwise-agent",
+    version="1.0.0",
+    author="UCloud",
+    author_email="orderwise.agent@gmail.com",
+    description="基于 AutoGLM 的智能外卖比价 Agent",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/phone-agent",
-    packages=find_packages(),
+    url="https://github.com/ucloud/orderwise-agent",
+    packages=find_packages(include=["orderwise_agent*", "phone_agent*", "mcp_mode*"]),
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
@@ -30,20 +30,26 @@ setup(
     ],
     python_requires=">=3.10",
     install_requires=[
+        "PyYAML>=6.0",
         "Pillow>=12.0.0",
+        "pydantic>=2.12.5",
         "openai>=2.9.0",
+        "pymongo>=4.15.5",
+        "starlette>=0.50.0",
+        "mcp>=1.0.0",
+        "fastmcp>=0.1.0",
+        "uvicorn>=0.20.0",
     ],
     extras_require={
         "dev": [
             "pytest>=7.0.0",
             "black>=23.0.0",
-            "mypy>=1.0.0",
             "ruff>=0.1.0",
         ],
     },
     entry_points={
         "console_scripts": [
-            "phone-agent=main:main",
+            "orderwise-agent=orderwise_agent.__main__:main",
         ],
     },
 )

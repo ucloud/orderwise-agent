@@ -59,6 +59,14 @@ screenshots/
 benchmark/results/*.json
 !benchmark/results/.gitkeep
 
+# Test files with sensitive data
+test_device_mapping.json
+*_device_mapping.json
+!examples/app_device_mapping.json
+
 # Keep old files during transition
 call_model.py
 app_package_name.py
+
+# Legacy directory (GitLab template, not needed)
+orderwise-agent/

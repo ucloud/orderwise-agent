@@ -130,14 +130,18 @@ def load_mcp_config(config_path: Optional[str] = None) -> Dict[str, Any]:
     else:
         config_path = Path(config_path)
     
+    mcp_server_dir = Path(__file__).parent
+    mcp_mode_dir = mcp_server_dir.parent
+    project_root = mcp_mode_dir.parent
+    
     default_config = {
         "server": {
             "host": "0.0.0.0",
             "port": 8703,
         },
         "paths": {
-            "app_device_mapping": "mcp_mode/mcp_server/app_device_mapping.json",
-            "apps_config": "examples/apps_config.json",
+            "app_device_mapping": str(mcp_server_dir / "app_device_mapping.json"),
+            "apps_config": str(project_root / "examples" / "apps_config.json"),
         },
         "agent": {
             "max_steps": 30,
@@ -176,7 +180,6 @@ def load_mcp_config(config_path: Optional[str] = None) -> Dict[str, Any]:
         with open(config_path, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
         
-        # 合并默认配置和用户配置
         merged_config = default_config.copy()
         if config:
             for key, value in config.items():
@@ -186,12 +189,49 @@ def load_mcp_config(config_path: Optional[str] = None) -> Dict[str, Any]:
                     merged_config[key] = value
         
         if "paths" in merged_config:
-            project_root = Path(__file__).parent.parent.parent
-            for path_key in ["devices_config", "apps_config"]:
-                if path_key in merged_config["paths"]:
-                    path_value = merged_config["paths"][path_key]
-                    if not os.path.isabs(path_value):
-                        merged_config["paths"][path_key] = str(project_root / path_value)
+            mcp_server_dir = Path(__file__).parent
+            mcp_mode_dir = mcp_server_dir.parent
+            project_root = mcp_mode_dir.parent
+            
+            def resolve_path(path_value: str, prefer_package: bool = True) -> str:
+                if os.path.isabs(path_value):
+                    return path_value
+                
+                if prefer_package:
+                    resolved_path = mcp_server_dir / path_value
+                    if resolved_path.exists():
+                        return str(resolved_path)
+                    resolved_path = mcp_mode_dir / path_value
+                    if resolved_path.exists():
+                        return str(resolved_path)
+                
+                resolved_path = project_root / path_value
+                if resolved_path.exists():
+                    return str(resolved_path)
+                
+                return path_value
+            
+            if "app_device_mapping" in merged_config["paths"]:
+                path_value = merged_config["paths"]["app_device_mapping"]
+                if path_value.startswith("mcp_mode/mcp_server/"):
+                    path_value = path_value.replace("mcp_mode/mcp_server/", "")
+                elif path_value.startswith("mcp_mode/"):
+                    path_value = path_value.replace("mcp_mode/", "")
+                merged_config["paths"]["app_device_mapping"] = resolve_path(path_value, prefer_package=True)
+            
+            if "apps_config" in merged_config["paths"]:
+                path_value = merged_config["paths"]["apps_config"]
+                if path_value.startswith("examples/"):
+                    path_value = path_value.replace("examples/", "")
+                merged_config["paths"]["apps_config"] = resolve_path(f"examples/{path_value}", prefer_package=False)
+            
+            if "model_config" in merged_config["paths"]:
+                path_value = merged_config["paths"]["model_config"]
+                if path_value.startswith("mcp_mode/mcp_server/"):
+                    path_value = path_value.replace("mcp_mode/mcp_server/", "")
+                elif path_value.startswith("mcp_mode/"):
+                    path_value = path_value.replace("mcp_mode/", "")
+                merged_config["paths"]["model_config"] = resolve_path(path_value, prefer_package=True)
         
         with _mcp_config_lock:
             _mcp_config_cache = merged_config
@@ -332,39 +372,36 @@ def compare_prices_backend(
                 "session_id": session_id,
             }
     
-    # Load MCP configuration
     mcp_config = load_mcp_config(mcp_config_path)
     
-    # Use config file values if parameters are not provided
     app_device_mapping_path = app_device_mapping_path or mcp_config["paths"]["app_device_mapping"]
     apps_config_path = apps_config_path or mcp_config["paths"]["apps_config"]
     model_provider = model_provider or mcp_config["model"]["default_provider"]
     max_steps = max_steps or mcp_config["agent"]["max_steps"]
     
-    # MCP mode: Always use sync mode (no MongoDB)
-    # Force mongodb_connection_string to None for MCP mode to trigger sync mode
     mongodb_connection_string = None
     
     if not task_id:
         task_id = f"task-{uuid.uuid4().hex[:8]}"
     if not user_id:
-        user_id = "mcp_user"  # Default user_id for MCP mode
+        user_id = "mcp_user"
     
-    # Load app_device_mapping: priority: device_mapping parameter > app_device_mapping.json file
     devices_config = {}
     if device_mapping:
-        # Use device_mapping parameter (highest priority)
         devices_config = device_mapping
         print(f"[MCP] 使用参数传入的设备映射: {len(devices_config)} 个设备")
     else:
-        devices_config = load_devices_config(app_device_mapping_path)
-        print(f"[MCP] 从配置文件读取设备映射: {len(devices_config)} 个设备")
+        app_device_mapping_path_obj = Path(app_device_mapping_path)
+        if not app_device_mapping_path_obj.exists():
+            print(f"[MCP警告] 设备映射配置文件不存在: {app_device_mapping_path}，请通过 device_mapping 参数传入或创建配置文件")
+        else:
+            devices_config = load_devices_config(app_device_mapping_path)
+            print(f"[MCP] 从配置文件读取设备映射: {len(devices_config)} 个设备")
     
-    apps_config = load_apps_config(apps_config_path)
+    apps_config = load_apps_config(apps_config_path) if apps_config_path and Path(apps_config_path).exists() else load_apps_config()
     
     if apps:
         filtered_apps_config = {}
-        # 从配置文件读取应用名称映射
         app_name_mapping = mcp_config["search"]["app_name_mapping"]
         for app_name in apps:
             key = app_name_mapping.get(app_name)
